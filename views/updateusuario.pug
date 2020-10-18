@@ -1,0 +1,51 @@
+extends layout
+
+block content       
+    // Navigation
+    nav#mainNav.navbar.navbar-expand-lg.bg-secondary.text-uppercase.fixed-top
+       a.navbar-brand.js-scroll-trigger(href='#page-top') Red de Bicicletas
+  
+    .container
+        br
+        br
+        br
+        br
+        br
+        br
+        .row
+            .col-24
+
+                a.btn.btn-primary.btn-sm.active(href='/usuarios', role='button', aria-pressed='true') Volver
+                            
+                br          
+                br 
+
+                h5 Actualizar Usuario
+                h8 Modifique los valores del usuario seleccionado.
+          
+                br 
+                br 
+
+                form(action=`/usuarios/${usuario.id}/update` method='post')
+                    .form-group
+                    label(for='nombre') Nombre:
+                    input#nombre.form-control(type='text' name='nombre' value=usuario.nombre class=errors.nombre ? 'is-invalid' : '' )
+                    if errors.nombre
+                        small(#nombreHelp.text-danger)
+                            = errors.nombre.message
+                    label(for='email') Mail:
+                    input#email.form-control(type="text" name='email' value=usuario.email)
+                    br
+                    br
+                    button.btn.btn-primary(type="submit") Actualizar
+                    br
+                    br
+    // Footer
+    footer.footer.text-center
+    // Copyright Section
+    .copyright.py-4.text-center.text-white
+        .container 
+    // Scroll to Top Button (Only visible on small and extra-small screen sizes)
+    .scroll-to-top.d-lg-none.position-fixed
+        a.js-scroll-trigger.d-block.text-center.text-white.rounded(href='#page-top')
+        i.fa.fa-chevron-up

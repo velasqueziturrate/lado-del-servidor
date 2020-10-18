@@ -1,0 +1,62 @@
+extends layout
+
+block content   
+    // Navigation
+    nav#mainNav.navbar.navbar-expand-lg.bg-secondary.text-uppercase.fixed-top
+       a.navbar-brand.js-scroll-trigger(href='/') Red de Bicicletas
+  
+    .container
+        br
+        br
+        br
+        br
+        br
+        br
+        .row
+            .col-6
+
+                a.btn.btn-primary.btn-sm.active(href='/', role='button', aria-pressed='true') Volver 
+                a.btn.btn-secondary.btn-sm(href='/usuarios/create', role='button', aria-pressed='true') Crear Usuario
+ 
+                table.table.table-bordered.table-dark
+                    thead
+                        tr
+                            th(scope='col' colspan=7) LISTADO DE USUARIOS
+                        tr
+                            th(scope='col') # 
+                            th(scope='col') Nombre 
+                            th(scope='col') Email
+                            th(scope='col') Verificado
+                            th(scope='col') 
+                            th(scope='col') 
+                            th(scope='col') 
+                    tbody
+                        each usuario in listUsuarios
+                            tr
+                                td(scope='row')
+                                  = usuario.id
+                                td= usuario.nombre
+                                td= usuario.email
+                                td= usuario.verificado ? 'SI' : 'NO' 
+                                td.text-center
+                                    a.btn.btn-warning(href=`usuarios/${usuario.id}/reservar` role="button") 
+                                      = 'Reservar Bicicleta'
+                                td.text-center
+                                    a.btn.btn-primary(href=`usuarios/${usuario.id}/update` role="button") 
+                                     i.fas.fa-user-edit  
+                                td.text-center
+                                    form.inline(method='post' action=`usuarios/${usuario.id}/delete`)
+                                        input(type='hidden' name='id' value=usuario.id)
+                                        button.btn.btn-primary(type='submit' name='submit_param' value='submit_value')
+                                         i.fas.fa-trash 
+
+
+    // Footer
+    footer.footer.text-center
+    // Copyright Section
+    .copyright.py-4.text-center.text-white
+        .container 
+    // Scroll to Top Button (Only visible on small and extra-small screen sizes)
+    .scroll-to-top.d-lg-none.position-fixed
+        a.js-scroll-trigger.d-block.text-center.text-white.rounded(href='#page-top')
+        i.fa.fa-chevron-up

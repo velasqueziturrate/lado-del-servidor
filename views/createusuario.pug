@@ -1,0 +1,68 @@
+extends layout
+
+block content       
+    // Navigation
+    nav#mainNav.navbar.navbar-expand-lg.bg-secondary.text-uppercase.fixed-top
+       a.navbar-brand.js-scroll-trigger(href='#page-top') Red de Bicicletas
+  
+    .container
+        br
+        br
+        br
+        br
+        br
+        br 
+        .row
+            .col-24
+
+                a.btn.btn-primary.btn-sm.active(href='/usuarios', role='button', aria-pressed='true') Volver
+                            
+                br          
+                br 
+
+                h5 Nuevo Usuario
+                h8 Ingrese los datos del usuario a registrar.
+          
+                br 
+                br 
+
+                form(action=`/usuarios/create` method='post')
+                    .form-group 
+                        label(for='nombre') Nombre:
+                        input#nombre.form-control(type='text' name='nombre' value=usuario.nombre class=errors.nombre ? 'is-invalid' : '')
+                        if errors.nombre
+                            small#nombreHelp.tect-danger
+                                = errors.nombre.message
+                    .form-group
+                        label(for='email') Email:
+                        input#email.form-control(type='text' name='email' value=usuario.email class=errors.email ? 'is-invalid' : '')
+                        if errors.email
+                            small#emailHelp.text-danger
+                                = errors.email.message
+                    .form-group
+                        label(for='pwd') Password:
+                        input#pwd.form-control(type='password' name='password' class= errors.password ? 'is-invalid' : '')
+                        if errors.password
+                            small#passwordHelp.text-danger
+                                = errors.password.message
+                    .form-group
+                        label(for='confirm-pwd') Confirmar Password:
+                        input#confirm-pwd.form-control(type='password' name='confirm_password' class=errors.confirm_password ? 'is-invalid' : '' )
+                        if errors.confirm_password
+                            small#confirm_passwordHelp.text-danger
+                                = errors.confirm_password.message
+                    br
+                    br
+                    input.btn.btn-primary(type='submit' value='OK')
+ 
+                    br
+                    br
+    // Footer
+    footer.footer.text-center
+    // Copyright Section
+    .copyright.py-4.text-center.text-white
+        .container 
+    // Scroll to Top Button (Only visible on small and extra-small screen sizes)
+    .scroll-to-top.d-lg-none.position-fixed
+        a.js-scroll-trigger.d-block.text-center.text-white.rounded(href='#page-top')
+        i.fa.fa-chevron-up
