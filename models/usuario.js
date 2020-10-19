@@ -1,4 +1,3 @@
-const { type } = require('jquery');
 var mongoose = require('mongoose');
 var Reserva = require('./reserva');
 const bcrypt = require('bcrypt');
@@ -9,6 +8,9 @@ const saltRounds = 10;
 
 const Token = require('../models/token');
 const mailer = require('../mailer/mailer');
+const { callbackPromise } = require('nodemailer/lib/shared');
+const { Console } = require('console');
+
 
 var Schema = mongoose.Schema;
 
@@ -26,10 +28,10 @@ var usuarioSchema = new Schema({
     email: {
         type: String,
         trim: true,
-        required: [true, 'El email es obligatorio'],
+        required: [true, 'El email es obligatorio.'],
         lowercase: true,
         unique: true,
-        validate: [validateEmail, 'Por favor, ingrese un email valido'],
+        validate: [validateEmail, 'Por favor, ingrese un email valido.'],
         match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/]
     },
     password: {
@@ -66,16 +68,14 @@ usuarioSchema.statics.add = function(vUsuario, cb) {
     this.create(vUsuario, cb);
 }
 
-
 usuarioSchema.methods.reservar = function(biciId, desde, hasta, cb) {
-    var reserva = new Reserva({
-        usuario: this._id,
-        bicicleta: biciId,
-        desde: desde,
-        hasta: hasta
-    });
-
+    var reserva = new Reserva({ usuario: this._id, bicicleta: biciId, desde: desde, hasta: hasta });
+    console.log(reserva);
     reserva.save(cb);
+}
+
+usuarioSchema.statics.removeByUsuario = function(vUsuario, cb) {
+    return this.deleteOne({ usuario: vUsuario }, cb);
 }
 
 usuarioSchema.methods.enviar_email_bienvenida = function(cb) {
@@ -101,5 +101,92 @@ usuarioSchema.methods.enviar_email_bienvenida = function(cb) {
     });
 
 }
+
+usuarioSchema.methods.resetPassword = function(cb) {
+    const token = new Token({ _userId: this.id, token: crypto.randomBytes(16).toString('hex') });
+    const email_destination = this.email;
+    token.save(function(err) {
+        if (err) { return cb(err); }
+
+        const mailOptions = {
+            from: 'no-reply@redbicicletas.com',
+            to: email_destination,
+            subject: 'Reseteo de password de cuenta ',
+            text: 'Hola,\n\n' + 'Por favor, para resetear el password de su cuenta haga click en este link: \n' +
+                'http://localhost:3000/' + 'resetPassword\/' + token.token + '\n'
+        };
+
+        mailer.sendMail(mailOptions, function(err) {
+            if (err) { return cb(err); }
+
+            console.log('Se envio un email para resetear el password a: ' + email_destination + '.');
+
+        });
+
+        cb(null);
+
+    });
+}
+
+usuarioSchema.statics.findOneOrCreateByGoogle = function findOneOrCreateByGoogle(condition, callback) {
+
+    const self = this;
+    console.log(condition);
+    self.findOne({
+        $or: [
+            { 'googleId': condition.id }, { 'email': condition.emails[0].value }
+        ]
+    }, (err, result) => {
+        if (result) {
+            callback(err, result)
+        } else {
+            console.log('--------- CONDITION ---------');
+            console.log(condition);
+            let values = {};
+            values.googleId = condition.id;
+            values.email = condition.emails[0].value;
+            values.nombre = condition.displayName || 'SIN NOMBRE';
+            values.verificado = true;
+            values.password = condition._json.etag;
+            console.log('----------- VALUES ----------');
+            console.log(values);
+            self.create(values, (err, result) => {
+                if (err) console.log(err);
+                return callback(err, result)
+            })
+        }
+    })
+};
+
+usuarioSchema.statics.findOneOrCreateByFacebook = function findOneOrCreateByFacebook(condition, callback) {
+
+    const self = this;
+    console.log(condition);
+    self.findOne({
+        $or: [
+            { 'facebookId': condition.id }, { 'email': condition.emails[0].value }
+        ]
+    }, (err, result) => {
+        if (result) {
+            callback(err, result)
+        } else {
+            console.log('--------- CONDITION ---------');
+            console.log(condition);
+            let values = {};
+            values.facebookId = condition.id;
+            values.email = condition.emails[0].value;
+            values.nombre = condition.displayName || 'SIN NOMBRE';
+            values.verificado = true;
+            values.password = crypto.randomBytes(16).toString('hex');
+            console.log('----------- VALUES ----------');
+            console.log(values);
+            self.create(values, (err, result) => {
+                if (err) console.log(err);
+                return callback(err, result)
+            })
+        }
+    })
+};
+
 
 module.exports = mongoose.model('Usuario', usuarioSchema);
