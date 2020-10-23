@@ -140,6 +140,10 @@ app.use('/privacy_policy', (req, res) => {
     res.sendFile('public/privacy_policy.html');
 });
 
+app.use('/googlebe316eb8954df9f9', (req, res) => {
+    res.sendFile('public/googlebe316eb8954df9f9.html');
+});
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
