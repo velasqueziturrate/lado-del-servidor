@@ -7,7 +7,7 @@ const FacebookTokenStrategy = require('passport-facebook-token');
 passport.use(new FacebookTokenStrategy({
     clientID: process.env.FACEBOOK_ID,
     clientSecret: process.env.FACEBOOK_SECRET,
-
+    callbackURL: process.env.HOST + "/auth/facebook/callback"
 }, function(accessToken, refreshToken, profile, done) {
     try {
         Usuario.findOneOrCreateByFacebook(profile, function(err, user) {
@@ -35,7 +35,7 @@ passport.use(new LocalStrategy(
 passport.use(new GoogleStrategy({
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-
+        callbackURL: process.env.HOST + "/auth/google/callback"
     },
     function(accessToken, refreshToken, profile, cb) {
         console.log(profile);
