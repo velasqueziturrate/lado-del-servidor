@@ -1,4 +1,4 @@
-extends ../layout
+extends layout
 
 block content
     a(href='/bicicletas') Volver
@@ -7,12 +7,12 @@ block content
     br
     br
 
-    h1  Actualizando Bicicleta
+    h1 Modificar Bicicleta
 
     br
     br
 
-    form(action=`/bicicletas/${bici.id}/update` method='post')
+    form(action=`/bicicletas/update/${bici.id}` method='post')
         label(for='id') ID:
         input#id(type='text' name='id' value=bici.id)
         br
@@ -23,10 +23,10 @@ block content
         input#modelo(type='text' name='modelo' value=bici.modelo)
         br
         label(for='lat') Latitud:
-        input#modelo(type='text' name='lat' value=bici.ubicacion[0])
+        input#lat(type='text' name='lat' value=bici.ubicacion[0])
         br
         label(for='lng') Longitud:
-        input#modelo(type='text' name='lng' value=bici.ubicacion[1])
+        input#lng(type='text' name='lng' value=bici.ubicacion[1])
         br
         br
-        input.btn(type='submit' value='OK')
+        input.btn(type="submit" value='OK')
