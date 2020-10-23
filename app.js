@@ -159,12 +159,7 @@ app.use('/googlebe316eb8954df9f9', (req, res) => {
 });
 
 app.get('/auth/google',
-    passport.authenticate('google', {
-        scope: [
-            'https://www.googleapis.com/auth/plus.login',
-            'https://www.googleapis.com/auth/plus.profile.emails.read'
-        ]
-    }));
+    passport.authenticate('google', { scope: ['profile'] }));
 
 app.get('/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
