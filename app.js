@@ -1,4 +1,5 @@
 require('dotenv').config();
+require('newrelic');
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -9,6 +10,7 @@ const Usuario = require('./models/usuario');
 const passport = require('./config/passport');
 const session = require('express-session');
 const jwt = require('jsonwebtoken');
+const MongoDBStore = require('connect-mongodb-session')(session);
 
 var indexRouter = require('./routes/index');
 var usuariosRouter = require('./routes/usuarios');
@@ -18,7 +20,20 @@ var bicicletasAPIRouter = require('./routes/api/bicicletas')
 var usuariosAPIRouter = require('./routes/api/usuarios');
 var authAPIRouter = require('./routes/api/auth')
 
-const store = new session.MemoryStore;
+let store;
+if (process.env.NODE_ENV === 'development') {
+    store = new session.MemoryStore;
+} else {
+    store = new MongoDBStore({
+        uri: process.env.MONGO_URI,
+        collection: 'sessions'
+    });
+    store.on('error', function(error) {
+        assert.ifError(error);
+        assert.ok(false);
+    });
+}
+
 
 var app = express();
 
@@ -143,6 +158,16 @@ app.use('/privacy_policy', (req, res) => {
 app.use('/googlebe316eb8954df9f9', (req, res) => {
     res.sendFile('public/googlebe316eb8954df9f9.html');
 });
+
+app.get('/auth/google',
+    passport.authenticate('google', { scope: ['profile'] }));
+
+app.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    function(req, res) {
+        // Successful authentication, redirect home.
+        res.redirect('/');
+    });
 
 
 // catch 404 and forward to error handler
