@@ -159,14 +159,29 @@ app.use('/googlebe316eb8954df9f9', (req, res) => {
 });
 
 app.get('/auth/google',
-    passport.authenticate('google', { scope: ['profile'] }));
+    passport.authenticate('google', {
+        scope: [
+            'https://www.googleapis.com/auth/plus.login', 'https://www.googleapis.com/auth/plus.profile.emails.read',
+            'profile', 'email '
+        ]
+    }));
 
-app.get('/auth/google/callback',
-    passport.authenticate('google', { failureRedirect: '/login' }),
-    function(req, res) {
-        // Successful authentication, redirect home.
-        res.redirect('/');
-    });
+app.get('/auth/google/callback', passport.authenticate('google', {
+
+    successRedirect: '/',
+    failureRedirect: '/error'
+
+}));
+
+// app.get('/auth/google',
+//     passport.authenticate('google', { scope: ['profile'] }));
+
+// app.get('/auth/google/callback',
+//     passport.authenticate('google', { failureRedirect: '/login' }),
+//     function(req, res) {
+//         // Successful authentication, redirect home.
+//         res.redirect('/');
+//     });
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
